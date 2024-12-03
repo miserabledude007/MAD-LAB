@@ -97,10 +97,12 @@ Activity_main.xml:-
         android:text="View All"
         android:textSize="30dp" />
 </AbsoluteLayout>
+
 ———————————————————————————————————————————————————————————————————————
+
 MainActivity.java:-
 
-package com.example.ex2;
+package com.mad.db;
 
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
