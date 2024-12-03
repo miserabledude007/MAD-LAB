@@ -31,10 +31,12 @@ Activity_main.xml:-
         android:text="Change color"
         android:textSize="25sp" />
 </LinearLayout>
+
 ———————————————————————————————————————————————————————————————————————
+
 MainActivity.java:-
 
-package com.example.ex1;
+package com.MAD.gui_font_colour;
 
 import android.graphics.Color;
 import android.os.Bundle;
