@@ -1,0 +1,169 @@
+Activity_main.xml:-
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
+
+        <Button
+            android:id="@+id/Add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="+"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/Sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="-"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/Mul"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="*"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/Div"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="/"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Answer is"
+        android:textSize="30sp"
+        android:gravity="center" />
+</LinearLayout>
+
+———————————————————————————————————————————————————————————————————————
+
+MainActivity.java:-
+
+package com.mad.calc;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    // Defining the Views
+    EditText Num1;
+    EditText Num2;
+    Button Add;
+    Button Sub;
+    Button Mul;
+    Button Div;
+    TextView Result;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Referring the Views
+        Num1 = findViewById(R.id.editText1);
+        Num2 = findViewById(R.id.editText2);
+        Add = findViewById(R.id.Add);
+        Sub = findViewById(R.id.Sub);
+        Mul = findViewById(R.id.Mul);
+        Div = findViewById(R.id.Div);
+        Result = findViewById(R.id.textView);
+
+        // Set a listener for the buttons
+        Add.setOnClickListener(this);
+        Sub.setOnClickListener(this);
+        Mul.setOnClickListener(this);
+        Div.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        float num1 = 0;
+        float num2 = 0;
+        float result = 0;
+        String oper = "";
+
+        // Check if the fields are empty
+        if (TextUtils.isEmpty(Num1.getText().toString()) || TextUtils.isEmpty(Num2.getText().toString())) {
+            return;
+        }
+
+        // Read EditText and fill variables with numbers
+        num1 = Float.parseFloat(Num1.getText().toString());
+        num2 = Float.parseFloat(Num2.getText().toString());
+
+        // Defines the button that has been clicked and performs the corresponding operation
+        if (v.getId() == R.id.Add) {
+            oper = "+";
+            result = num1 + num2;
+        } else if (v.getId() == R.id.Sub) {
+            oper = "-";
+            result = num1 - num2;
+        } else if (v.getId() == R.id.Mul) {
+            oper = "*";
+            result = num1 * num2;
+        } else if (v.getId() == R.id.Div) {
+            // Check for division by zero
+            if (num2 != 0) {
+                oper = "/";
+                result = num1 / num2;
+            } else {
+                Result.setText("Error: Division by 0");
+                return;
+            }
+        }
+
+        // Form the output line and set the result
+        Result.setText(num1 + " " + oper + " " + num2 + " = " + result);
+    }
+}
