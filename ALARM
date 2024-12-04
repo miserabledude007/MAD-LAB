@@ -1,0 +1,237 @@
+Activity_main.xml:-
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- TimePicker for setting the alarm time -->
+    <TimePicker
+        android:id="@+id/timePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:timePickerMode="spinner" />
+
+    <!-- ToggleButton to enable/disable the alarm -->
+    <ToggleButton
+        android:id="@+id/toggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:checked="false"
+        android:textOn="Alarm On"
+        android:textOff="Alarm Off"
+        android:onClick="OnToggleClicked" />
+
+</LinearLayout>
+
+———————————————————————————————————————————————————————————————————————
+
+MainActivity.java:-
+
+package com.mad.alarm;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.View;
+import android.widget.TimePicker;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity {
+    TimePicker alarmTimePicker;
+    PendingIntent pendingIntent;
+    AlarmManager alarmManager;
+    private static Ringtone ringtone; // Static reference to the Ringtone
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        alarmTimePicker = findViewById(R.id.timePicker);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // Check if permission to schedule exact alarms is granted
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager != null && !alarmManager.canScheduleExactAlarms()) {
+                // Show a message to the user to enable this permission
+                Toast.makeText(this, "Please enable the permission to schedule exact alarms", Toast.LENGTH_LONG).show();
+                // Optionally, direct the user to settings to enable this permission
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                startActivity(intent);
+            }
+        }
+    }
+
+    public void OnToggleClicked(View view) {
+        long time;
+        if (((ToggleButton) view).isChecked()) {
+            Toast.makeText(MainActivity.this, "ALARM ON", Toast.LENGTH_SHORT).show();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
+            calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
+
+            Intent intent = new Intent(this, AlarmReceiver.class);
+
+            // Flag mutable or immutable, added here:
+            int flags = PendingIntent.FLAG_IMMUTABLE;  // This makes it immutable (recommended)
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, flags);
+
+            time = (calendar.getTimeInMillis() - (calendar.getTimeInMillis() % 60000));  // Round to the nearest minute
+            if (System.currentTimeMillis() > time) {
+                // If the time is in the past, add 12 hours
+                if (calendar.get(Calendar.AM_PM) == 0)
+                    time = time + (1000 * 60 * 60 * 12);
+                else
+                    time = time + (1000 * 60 * 60 * 24);  // Add 24 hours for PM time
+            }
+
+            // Use setExactAndAllowWhileIdle for exact alarm
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+        } else {
+            // If alarm is turned off, cancel it
+            alarmManager.cancel(pendingIntent);
+
+            // Stop the ringtone if it's playing
+            if (ringtone != null) {
+                ringtone.stop(); // This stops the ringtone
+                ringtone = null; // Nullify the reference after stopping the sound
+            }
+
+            Toast.makeText(MainActivity.this, "ALARM OFF", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Method to start the ringtone when the alarm is triggered
+    public static void startRingtone(Ringtone r) {
+        ringtone = r;  // Save the reference to the static ringtone
+    }
+
+    // Method to stop the ringtone from MainActivity
+    public static void stopRingtone() {
+        if (ringtone != null) {
+            ringtone.stop();  // Stop the ringtone
+            ringtone = null;  // Nullify the reference after stopping the sound
+        }
+    }
+}
+
+———————————————————————————————————————————————————————————————————————
+
+AlarmReceiver.java:-
+
+package com.mad.alarm;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.widget.Toast;
+
+public class AlarmReceiver extends BroadcastReceiver {
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        // Show a toast notification when the alarm triggers
+        Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show();
+
+        // Get the default alarm sound URI
+        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        // If no alarm sound is available, use the default notification sound
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        }
+
+        // Create a Ringtone object and play the alarm sound
+        Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
+        ringtone.play();
+
+        // Pass the ringtone to MainActivity to be controlled later
+        MainActivity.startRingtone(ringtone);
+    }
+}
+
+———————————————————————————————————————————————————————————————————————
+
+AndroidManifest.xml:-
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mad.alarm">
+
+    <!-- Declare permission to schedule exact alarms -->
+    <uses-permission android:name="android.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <activity android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="false"/>
+
+    </application>
+</manifest>
+
+———————————————————————————————————————————————————————————————————————
+
+styles.xml:-
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Customize your theme here -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme attributes -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+</resources>
+
+———————————————————————————————————————————————————————————————————————
+
+colors.xml:-
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+</resources>
+
+———————————————————————————————————————————————————————————————————————
