@@ -54,7 +54,6 @@ MainActivity.java:-
 
 package com.mad.notification;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -72,7 +71,7 @@ import androidx.core.app.NotificationCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String CHANNEL_ID = "notification_channel"; // Custom channel ID
+    private static final String CHANNEL_ID = "notification_channel";
     private static final int NOTIFICATION_ID = 0;
 
     Button notify;
@@ -83,52 +82,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize views
         notify = findViewById(R.id.button);
         e = findViewById(R.id.editText);
 
-        // Handle button click for notification
         notify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String message = e.getText().toString();
 
-                // If message is empty, show error
                 if (message.isEmpty()) {
                     e.setError("Please enter a message.");
                     return;
                 }
 
                 try {
-                    // Creating an Intent for the SecondActivity
-                    Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-                    intent.putExtra("message_key", message); // Passing message to the second activity
 
-                    // Add FLAG_IMMUTABLE to PendingIntent
+                    Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+                    intent.putExtra("message_key", message);
+
                     PendingIntent pendingIntent = PendingIntent.getActivity(
                             MainActivity.this,
                             0,
                             intent,
-                            PendingIntent.FLAG_IMMUTABLE); // Specify FLAG_IMMUTABLE here
+                            PendingIntent.FLAG_IMMUTABLE);
 
-                    // Build the notification using NotificationCompat for compatibility
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
                             .setContentTitle("New Message")
                             .setContentText(message)
                             .setSmallIcon(R.mipmap.ic_launcher)
                             .setContentIntent(pendingIntent)
-                            .setAutoCancel(true);  // Automatically dismiss after clicking
+                            .setAutoCancel(true);
 
-                    // Get the NotificationManager system service
                     NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                    // Check if NotificationManager is null
                     if (manager == null) {
                         Log.e("MainActivity", "NotificationManager is null");
                         return;
                     }
 
-                    // Create notification channel (for Android 8.0 and above)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         CharSequence name = "Notification Channel";
                         String description = "Channel for new message notifications";
@@ -138,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
                         manager.createNotificationChannel(channel);
                     }
 
-                    // Issue the notification
                     manager.notify(NOTIFICATION_ID, builder.build());
                     Log.d("MainActivity", "Notification sent successfully.");
 
@@ -170,13 +160,10 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        // Initialize TextView to display the passed message
         textView = findViewById(R.id.textView);
 
-        // Retrieve the message passed from MainActivity
         String message = getIntent().getStringExtra("message_key");
 
-        // Display the message in the TextView
         if (message != null) {
             textView.setText(message);
         }
@@ -192,9 +179,7 @@ AndroidManifest.xml:-
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mad.notification">
 
-    <!-- Permission for posting notifications (required from Android 13 onwards) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
 
     <application
         android:allowBackup="true"
@@ -207,7 +192,6 @@ AndroidManifest.xml:-
         android:theme="@style/Theme.NOTIFICATION"
         tools:targetApi="31">
 
-        <!-- Main Activity declaration -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -217,8 +201,9 @@ AndroidManifest.xml:-
             </intent-filter>
         </activity>
 
-        <!-- Second Activity declaration -->
         <activity android:name=".SecondActivity" android:exported="true" />
 
     </application>
 </manifest>
+
+———————————————————————————————————————————————————————————————————————
