@@ -7,7 +7,6 @@ Activity_main.xml:-
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Text Input field -->
     <EditText
         android:id="@+id/et_input_text"
         android:layout_width="match_parent"
@@ -16,7 +15,6 @@ Activity_main.xml:-
         android:textSize="18sp"
         android:padding="12dp"/>
 
-    <!-- Speak Button -->
     <Button
         android:id="@+id/btn_speak"
         android:layout_width="match_parent"
@@ -37,7 +35,6 @@ package com.mad.text_speech;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,28 +48,25 @@ public class MainActivity extends AppCompatActivity implements OnInitListener {
     private TextToSpeech textToSpeech;
     private EditText etInputText;
     private Button btnSpeak;
-    private boolean isInitialized = false; // Flag to track TTS initialization status
+    private boolean isInitialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize views
         etInputText = findViewById(R.id.et_input_text);
         btnSpeak = findViewById(R.id.btn_speak);
 
-        // Initialize TextToSpeech (as soon as the activity is created)
         textToSpeech = new TextToSpeech(this, this);
 
-        // Set click listener for the button
         btnSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String text = etInputText.getText().toString();
                 if (!text.isEmpty()) {
                     if (isInitialized) {
-                        speakOut(text);  // Speak immediately if TTS is initialized
+                        speakOut(text);
                     } else {
                         Toast.makeText(MainActivity.this, "Please wait, initializing TTS...", Toast.LENGTH_SHORT).show();
                     }
@@ -90,8 +84,8 @@ public class MainActivity extends AppCompatActivity implements OnInitListener {
             if (langResult == TextToSpeech.LANG_MISSING_DATA || langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Toast.makeText(this, "Language not supported or missing data", Toast.LENGTH_SHORT).show();
             } else {
-                isInitialized = true; // Set flag to true when TTS is initialized
-                btnSpeak.setEnabled(true); // Enable the button when TTS is ready
+                isInitialized = true;
+                btnSpeak.setEnabled(true);
                 Toast.makeText(this, "TTS Initialized", Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -99,9 +93,7 @@ public class MainActivity extends AppCompatActivity implements OnInitListener {
         }
     }
 
-    // Method to speak the text entered by the user
     private void speakOut(String text) {
-        // Immediate speaking once TTS is ready
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
@@ -133,7 +125,7 @@ AndroidManifest.xml:-
         <activity android:name=".MainActivity"
             android:label="Text To Voice"
             android:theme="@style/Theme.AppCompat.DayNight"
-            android:exported="true"> <!-- Set android:exported to true for launcher activity -->
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -141,3 +133,5 @@ AndroidManifest.xml:-
         </activity>
     </application>
 </manifest>
+
+———————————————————————————————————————————————————————————————————————
