@@ -62,12 +62,10 @@ public class MainActivity extends ListActivity {
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
 
-                // We will get the XML from an input stream
                 xpp.setInput(getInputStream(url), "UTF_8");
 
                 boolean insideItem = false;
 
-                // Returns the type of current event: START_TAG, END_TAG, etc..
                 int eventType = xpp.getEventType();
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
@@ -75,15 +73,15 @@ public class MainActivity extends ListActivity {
                             insideItem = true;
                         } else if (xpp.getName().equalsIgnoreCase("title")) {
                             if (insideItem)
-                                headlines.add(xpp.nextText()); // Extract the headline
+                                headlines.add(xpp.nextText());
                         } else if (xpp.getName().equalsIgnoreCase("link")) {
                             if (insideItem)
-                                links.add(xpp.nextText()); // Extract the link of the article
+                                links.add(xpp.nextText());
                         }
                     } else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
                         insideItem = false;
                     }
-                    eventType = xpp.next(); // Move to next element
+                    eventType = xpp.next();
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -126,7 +124,6 @@ AndroidManifest.xml:-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mad.rss" >
 
-    <!-- Permission to access the internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -136,9 +133,8 @@ AndroidManifest.xml:-
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
-        <!-- Specify android:exported explicitly -->
         <activity android:name=".MainActivity"
-            android:exported="true"> <!-- Set to true or false based on your requirements -->
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -156,9 +152,7 @@ styles.xml:-
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
