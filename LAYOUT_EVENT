@@ -160,12 +160,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Defining the Views
     EditText e1, e2;
     Button bt;
     Spinner s;
 
-    // Data for populating in Spinner
     String[] dept_array = {"CSE", "ECE", "IT", "Mech", "Civil"};
     String name, reg, dept;
 
@@ -174,30 +172,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Referring the Views
         e1 = findViewById(R.id.editText);
         e2 = findViewById(R.id.editText2);
         bt = findViewById(R.id.button);
         s = findViewById(R.id.spinner);
 
-        // Creating Adapter for Spinner
         ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_spinner_item, dept_array);
         s.setAdapter(adapter);
 
-        // Creating Listener for Button
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Getting the Values from Views
                 name = e1.getText().toString();
                 reg = e2.getText().toString();
                 dept = s.getSelectedItem().toString();
 
-                // Validate inputs
                 if (name.isEmpty() || reg.isEmpty() || dept.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Please fill all the details", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Intent to navigate to the second activity
                     Intent i = new Intent(MainActivity.this, SecondActivity.class);
                     i.putExtra("name_key", name);
                     i.putExtra("reg_key", reg);
@@ -231,20 +223,16 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        // Referring the Views
         t1 = findViewById(R.id.textView1);
         t2 = findViewById(R.id.textView2);
         t3 = findViewById(R.id.textView3);
 
-        // Getting the Intent
         Intent i = getIntent();
 
-        // Getting the Values from First Activity using the Intent received
         name = i.getStringExtra("name_key");
         reg = i.getStringExtra("reg_key");
         dept = i.getStringExtra("dept_key");
 
-        // Setting the Values to TextViews
         if (name != null && reg != null && dept != null) {
             t1.setText(name);
             t2.setText(reg);
@@ -293,3 +281,5 @@ AndroidManifest.xml:-
     </application>
 
 </manifest>
+
+———————————————————————————————————————————————————————————————————————
