@@ -1,0 +1,108 @@
+Activity_main.xml:-
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView" />
+</RelativeLayout>
+
+———————————————————————————————————————————————————————————————————————
+
+MainActivity.java:-
+
+package com.mad.graph_prim;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.widget.ImageView;
+
+public class MainActivity extends Activity {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main); 
+
+        Bitmap bg = Bitmap.createBitmap(720, 1280, Bitmap.Config.ARGB_8888);
+
+        ImageView i = (ImageView) findViewById(R.id.imageView);
+
+        i.setBackgroundDrawable(new BitmapDrawable(bg));
+
+        Canvas canvas = new Canvas(bg);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.BLUE);  
+        paint.setTextSize(50); 
+
+        canvas.drawText("Rectangle", 420, 150, paint);  
+        canvas.drawRect(400, 200, 650, 700, paint);  
+
+        canvas.drawText("Circle", 120, 150, paint);  
+        canvas.drawCircle(200, 350, 150, paint);  
+
+        canvas.drawText("Square", 120, 800, paint);  
+        canvas.drawRect(50, 850, 350, 1150, paint); 
+
+        canvas.drawText("Line", 480, 800, paint);  
+        canvas.drawLine(520, 850, 520, 1150, paint); 
+    }
+}
+
+———————————————————————————————————————————————————————————————————————
+
+build.gradle.kts(:app)
+
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace = "com.mad.graph_prim"
+    compileSdk = 35  // Change from 34 to 35
+
+    defaultConfig {
+        applicationId = "com.mad.graph_prim"
+        minSdk = 24
+        targetSdk = 35  // Change from 34 to 35
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.activity)
+    implementation(libs.constraintlayout)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+}
+
+———————————————————————————————————————————————————————————————————————
